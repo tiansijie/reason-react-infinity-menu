@@ -3,6 +3,6 @@ type node =
     .
     name : string,
     id : string,
-    isOpen : option string,
-    children : option (array node)
+    isOpen : Js.null_undefined string,
+    children : Js.null_undefined (array node)
   };

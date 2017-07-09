@@ -4,33 +4,20 @@ let component = ReasonReact.statelessComponent "InfinityMenu";
 
 let make tree::(tree: tree) _children => {
   let rec convertTreeToDiv (node: Tree.node) => {
-    Js.log node;
     let id = node##id;
-    let arr = [||];
-    switch node##children {
-    | Some children => Js.log children
-    | None => ()
-    };
-    /* switch node##children {
-       | Some children =>
-         Array.map (fun child => Js.log child) children;
-         [||]
-       /* children |>
-          Js.Array.reduce
-            (
-              fun accu (child: Tree.node) => {
-                Js.log child;
-                accu |> Array.append (convertTreeToDiv child)
-              }
-            )
-            arr */
-       | None =>
-         arr |>
-         Array.append [|
-           <li key=id> (ReasonReact.stringToElement node##name) </li>
-         |]
-       }; */
-    arr
+    switch (Js.Null_undefined.to_opt node##children) {
+    | Some children =>
+      children |>
+      Js.Array.reduce
+        (
+          fun prev (child: Tree.node) => {
+            let accu = prev |> Js.Array.concat (convertTreeToDiv child);
+            accu
+          }
+        )
+        [||]
+    | None => [|<li key=id> (ReasonReact.stringToElement node##name) </li>|]
+    }
   };
   let convertTree (tree: tree) => {
     let results =
@@ -41,6 +28,7 @@ let make tree::(tree: tree) _children => {
             accu |> Array.append (convertTreeToDiv node)
         )
         [||];
+    Js.log results;
     ReasonReact.arrayToElement results
   };
   {
