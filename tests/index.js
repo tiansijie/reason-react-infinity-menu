@@ -10,7 +10,7 @@ class App extends React.Component {
 			{
 				name: "Menu1",
 				id: "0",
-				isOpen: true,
+				isOpen: false,
 				children: [
 					{
 						name: "SubMenu1-1",
