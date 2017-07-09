@@ -3,32 +3,41 @@ type tree = array Tree.node;
 let component = ReasonReact.statelessComponent "InfinityMenu";
 
 let make tree::(tree: tree) _children => {
-  let rec convertTreeToDiv (node: Tree.node) => {
+  let rec convertTreeToDiv (node: Tree.node) (keyPath: string) (level: int) => {
     let id = node##id;
+    let newLevel = level + 1;
     switch (Js.Null_undefined.to_opt node##children) {
     | Some children =>
       children |>
-      Js.Array.reduce
+      Js.Array.reducei
         (
-          fun prev (child: Tree.node) => {
-            let accu = prev |> Js.Array.concat (convertTreeToDiv child);
+          fun prev (child: Tree.node) index => {
+            let accu =
+              prev |>
+              Js.Array.concat (
+                convertTreeToDiv child {j|$keyPath.children.$index|j} newLevel
+              );
             accu
           }
         )
         [||]
-    | None => [|<li key=id> (ReasonReact.stringToElement node##name) </li>|]
+    | None => [|
+        <li key={j|$keyPath+$id|j}>
+          (ReasonReact.stringToElement node##name)
+        </li>
+      |]
     }
   };
   let convertTree (tree: tree) => {
     let results =
       tree |>
-      Array.fold_left
+      Js.Array.reducei
         (
-          fun accu (node: Tree.node) =>
-            accu |> Array.append (convertTreeToDiv node)
+          fun accu (node: Tree.node) index =>
+            accu |>
+            Array.append (convertTreeToDiv node (string_of_int index) 0)
         )
         [||];
-    Js.log results;
     ReasonReact.arrayToElement results
   };
   {
