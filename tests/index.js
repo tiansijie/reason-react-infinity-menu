@@ -115,7 +115,7 @@ class App extends React.Component {
 		});
 	}
 
-	onNodeMouseClick(event, tree) {
+	onNodeMouseClick(event, { tree }) {
 		this.setState({
 			tree: tree
 		});

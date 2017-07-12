@@ -2,7 +2,13 @@ type tree = array Tree.node;
 
 let component = ReasonReact.statelessComponent "InfinityMenu";
 
-let make tree::(tree: tree) ::onNodeMouseClick ::onLeafMouseClick=? _children => {
+let make
+    tree::(tree: tree)
+    ::onNodeMouseClick
+    ::onLeafMouseClick=?
+    ::onLeafMouseUp=?
+    ::onLeafMouseDown=?
+    _children => {
   let onNodeClick (keyPath: string) (node: Tree.node) event _self => {
     node##isOpen#=(
                     Js.Null_undefined.return (
@@ -12,11 +18,21 @@ let make tree::(tree: tree) ::onNodeMouseClick ::onLeafMouseClick=? _children =>
                       }
                     )
                   );
-    onNodeMouseClick event tree node keyPath
+    onNodeMouseClick event {"node": node, "tree": tree, "keyPath": keyPath}
   };
-  let onLeafClick (keyPath: string) (node: Tree.node) event _self =>
+  let onTreeLeafClick (keyPath: string) (node: Tree.node) event _self =>
     switch onLeafMouseClick {
-    | Some click => click event node keyPath
+    | Some click => click event {"leaf": node, "keyPath": keyPath}
+    | None => ()
+    };
+  let onTreeLeafMouseDown (keyPath: string) (node: Tree.node) event _self =>
+    switch onLeafMouseDown {
+    | Some mousedown => mousedown event {"leaf": node, "keyPath": keyPath}
+    | None => ()
+    };
+  let onTreeLeafMouseUp (keyPath: string) (node: Tree.node) event _sefl =>
+    switch onLeafMouseUp {
+    | Some mouseup => mouseup event {"leaf": node, "keyPath": keyPath}
     | None => ()
     };
   let rec setDisplayTree (node: Tree.node) (keyPath: string) (level: int) self => {
@@ -36,7 +52,13 @@ let make tree::(tree: tree) ::onNodeMouseClick ::onLeafMouseClick=? _children =>
           <li
             className="infinity-menu-leaf-container"
             key={j|$keyPath+$id|j}
-            onClick=(self.ReasonReact.handle (onLeafClick keyPath node))>
+            onClick=(self.ReasonReact.handle (onTreeLeafClick keyPath node))
+            onMouseDown=(
+              self.ReasonReact.handle (onTreeLeafMouseDown keyPath node)
+            )
+            onMouseUp=(
+              self.ReasonReact.handle (onTreeLeafMouseUp keyPath node)
+            )>
             (ReasonReact.stringToElement node##name)
           </li>
         |]
@@ -95,5 +117,7 @@ let jsComponent =
           onLeafMouseClick::?(
             Js.Null_undefined.to_opt jsProps##onLeafMouseClick
           )
+          onLeafMouseUp::?(Js.Null_undefined.to_opt jsProps##onLeafMouseUp)
+          onLeafMouseDown::?(Js.Null_undefined.to_opt jsProps##onLeafMouseDown)
           [||]
     );
