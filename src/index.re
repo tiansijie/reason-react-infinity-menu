@@ -40,28 +40,61 @@ let make
     let newLevel = level + 1;
     let currNode =
       switch (Js.Null_undefined.to_opt node##children) {
-      | Some _children => [|
-          <li
-            className="infinity-menu-node-container"
-            key={j|$keyPath+$id|j}
-            onClick=(self.ReasonReact.handle (onNodeClick keyPath node))>
-            (ReasonReact.stringToElement node##name)
-          </li>
-        |]
-      | None => [|
-          <li
-            className="infinity-menu-leaf-container"
-            key={j|$keyPath+$id|j}
-            onClick=(self.ReasonReact.handle (onTreeLeafClick keyPath node))
-            onMouseDown=(
-              self.ReasonReact.handle (onTreeLeafMouseDown keyPath node)
-            )
-            onMouseUp=(
-              self.ReasonReact.handle (onTreeLeafMouseUp keyPath node)
-            )>
-            (ReasonReact.stringToElement node##name)
-          </li>
-        |]
+      | Some _children =>
+        switch (Js.Null_undefined.to_opt node##customComponent) {
+        | Some customComponent => [|
+            ReasonReact.createElement
+              customComponent
+              props::{
+                "key": {j|$keyPath+$id|j},
+                "index": {j|$keyPath+$id|j},
+                "name": node##name,
+                "onClick": self.ReasonReact.handle (onNodeClick keyPath node)
+              }
+              [||]
+          |]
+        | None => [|
+            <li
+              className="infinity-menu-node-container"
+              key={j|$keyPath+$id|j}
+              onClick=(self.ReasonReact.handle (onNodeClick keyPath node))>
+              (ReasonReact.stringToElement node##name)
+            </li>
+          |]
+        }
+      | None =>
+        switch (Js.Null_undefined.to_opt node##customComponent) {
+        | Some customComponent => [|
+            ReasonReact.createElement
+              customComponent
+              props::{
+                "key": {j|$keyPath+$id|j},
+                "index": {j|$keyPath+$id|j},
+                "name": node##name,
+                "onClick":
+                  self.ReasonReact.handle (onTreeLeafClick keyPath node),
+                "onMouseDown":
+                  self.ReasonReact.handle (onTreeLeafMouseDown keyPath node),
+                "onMouseUp":
+                  self.ReasonReact.handle (onTreeLeafMouseUp keyPath node)
+              }
+              [||]
+          |]
+        | None => [|
+            <li
+              className="infinity-menu-leaf-container"
+              key={j|$keyPath+$id|j}
+              onClick=(self.ReasonReact.handle (onTreeLeafClick keyPath node))
+              onMouseDown=(
+                self.ReasonReact.handle (onTreeLeafMouseDown keyPath node)
+              )
+              onMouseUp=(
+                self.ReasonReact.handle (onTreeLeafMouseUp keyPath node)
+              )>
+              (ReasonReact.stringToElement node##name)
+            </li>
+          |]
+        }
       };
     switch (Js.Null_undefined.to_opt node##isOpen) {
     | Some isOpen =>

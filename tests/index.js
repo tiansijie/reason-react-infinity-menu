@@ -1,7 +1,23 @@
 import React from "react";
 import ReactDOM from "react-dom";
-//import { component } from "../lib/js/src/index";
 const InfinityMenu = require("../lib/js/src/index").jsComponent
+
+
+function CustomNode ({index, onClick, name}) {
+	return (
+		<li className="infinity-menu-custom-node-container" key={index} onClick={onClick}>
+			<label>{name}</label>
+		</li>
+	);
+}
+
+function CustomLeaf ({index, onClick, onMouseUp, onMouseDown, name}) {
+	return (
+		<li className="infinity-menu-custom-leaf-container" key={index} onClick={onClick}>
+			<label>{name}</label>
+		</li>
+	);
+}
 
 class App extends React.Component {
 
@@ -11,6 +27,7 @@ class App extends React.Component {
 				name: "Menu1",
 				id: "0",
 				isOpen: false,
+				customComponent: CustomNode,
 				children: [
 					{
 						name: "SubMenu1-1",
@@ -101,7 +118,8 @@ class App extends React.Component {
 				children: [
 					{
 						name: "SubMenu3-1",
-						id: "0"
+						id: "0",
+						customComponent: CustomLeaf
 					},
 					{
 						name: "SubMenu3-2",
@@ -126,7 +144,6 @@ class App extends React.Component {
 			<InfinityMenu
 				tree={this.state.tree}
 				onNodeMouseClick={this.onNodeMouseClick.bind(this)}
-				maxLeaves={2}
 			/>
 		);
 	}

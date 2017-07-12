@@ -8,6 +8,17 @@
 	border-bottom: solid 1px rgb(73, 73, 73);
 }
 
+
+.infinity-menu-custom-node-container {
+	width: 100%;
+	background-color: rgb(255, 139, 143);
+	color: rgb(255, 255, 255);
+	height: 40px;
+	padding-left: 10px;
+	padding-top: 20px;
+	border-bottom: solid 1px rgb(73, 73, 73);
+}
+
 .infinity-menu-node-container:hover {
 	background-color: rgb(73, 73, 73);
 }
@@ -15,6 +26,16 @@
 .infinity-menu-leaf-container {
 	width: 100%;
 	background-color: rgb(94, 96, 99);
+	color: rgb(255, 255, 255);
+	height: 30px;
+	padding-left: 20px;
+	padding-top: 15px;
+	border-bottom: solid 1px rgb(73, 73 ,73);
+}
+
+.infinity-menu-custom-leaf-container {
+	width: 100%;
+	background-color: rgb(94, 96, 255);
 	color: rgb(255, 255, 255);
 	height: 30px;
 	padding-left: 20px;
